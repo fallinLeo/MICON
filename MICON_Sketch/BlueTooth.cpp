@@ -1,33 +1,24 @@
-
-
-class Motor
+/*#include <SoftwareSerial.h>
+void BTcommucation(SoftwareSerial SW)
 {
-  public:
-  int AIA,AIB;
-  int vel;
-  void forward(vel);
-  void back(vel);
-  void stop();
-  Motor(int aia,int aib)
+  if(SW.available()>0)
   {
-    AIA=aia;
-    AIB=aib;
-    vel=150;
-    pinMode(AIA,OUTPUT);
-    pinMode(AIB,OUTPUT);
+    int data = SW.read();
+
+    if(data=='b')
+    {
+      Serial.write("b");
+    }else if(data=='w')
+    {
+      Serial.write("w");
+    }else if(data=='c')
+    {
+     Serial.write("c");
+    }else if(data=='s')
+    {
+      Serial.write("s");
+    }
+
 
   }
-
-};
-
-void Motor::forward(vel)
-{
-  analogWrite(AIA, 0);
-	analogWrite(AIB, vel);
-}
-void Motor::back(vel)
-{
-  analogWrite(AIA,0);
-  analogWrite(AIB,0);
-}
-void Motor::back(vel);
+}*/
