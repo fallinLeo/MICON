@@ -1,5 +1,5 @@
 #include <SoftwareSerial.h>
-
+#include "BlueTooth.cpp"
 SoftwareSerial mySerial(2,3);//tx,rx
 
 const int AIA = 11;  //LEFT_ROLLER DIRECTION
@@ -7,7 +7,7 @@ const int AIB = 6;   //LEFT_ROLLER VELOCITY
 const int BIA = 9;   //RIGHT_ROLLER DIRECTION
 const int BIB = 5;   //RIGHT_ROLLER VELOCITY
 int Max_speed1 = 200; //forward speed
-int Max_speed2 = 180; //turn speed
+int Max_speed2 = 170; //turn speed
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
@@ -21,103 +21,127 @@ void setup() {
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  
-  if(mySerial.available())
-  {
-    //forward();
-    if(mySerial.read()=='S')
-    {
-      brake();
-      Serial.println(mySerial.read());
-    }
-    else if(mySerial.read()=='F')
-    {
-      forward();
-      Serial.println(mySerial.read());
-    }
-    else if(mySerial.read()=='B')
-    {
-      back();
-      Serial.println(mySerial.read());
-    }
-    else if(mySerial.read()=='L')
-    {
-      left();
-      Serial.println(mySerial.read());
-    }
-    else if(mySerial.read()=='R')
-    {
-      right(); 
-      Serial.println(mySerial.read());
-    }
-  }
-
+  char st;
+  bluetoothcheck(st);
   
 }
-/*
 
-  */
+void bluetoothcheck(char st)
+{
+  
+  if(mySerial.available()>0)
+  {
+    st = mySerial.read();
+    //forward();
+    if(st=='S')
+    {
+      brake();
+      Serial.println(st);
+    }
+    else if(st=='F')
+    {
+      forward();
+      Serial.println(st);
+    }
+    else if(st=='B')
+    {
+      back();
+      Serial.println(st);
+    }
+    else if(st=='L')
+    {
+      left();
+      Serial.println(st);
+    }
+    else if(st=='R')
+    {
+      right(); 
+      Serial.println(st);
+    }
+    else if(st=='I')
+    {
+      FRward();
+      Serial.println(st);
+    }
+    else if(st=='J')
+    {
+      RBward();
+      Serial.println(st);
+    }
+    else if(st=='H')
+    {
+      LBward();
+      Serial.println(st);
+    }
+    else if(st=='G')
+    {
+      FLward();
+      Serial.println(st);
+    }
+  }
+}
+
 //=======motor run function start=====
 void forward() {
+  analogWrite(AIA, Max_speed1+20);
+  analogWrite(AIB, 0);
+  analogWrite(BIA, Max_speed1);
+  analogWrite(BIB, 0);
+}
+void back() {
   analogWrite(AIA, 0);
   analogWrite(AIB, Max_speed1+20);
   analogWrite(BIA, 0);
   analogWrite(BIB, Max_speed1);
 
 }
-void back() {
-  analogWrite(AIA, Max_speed1+20);
+void FRward()
+{
+  analogWrite(AIA,250);
+  analogWrite(AIB,0);
+  analogWrite(BIA,Max_speed2);
+  analogWrite(BIB,0);
+}
+void RBward()
+{
+  analogWrite(AIA, 0);
+  analogWrite(AIB, Max_speed1+20);
+  analogWrite(BIA, 0);
+  analogWrite(BIB, Max_speed2);
+}
+void LBward()
+{
+  analogWrite(AIA, 0);
+  analogWrite(AIB, Max_speed2);
+  analogWrite(BIA, 0);
+  analogWrite(BIB, Max_speed1+20);
+
+}
+void FLward()
+{
+  analogWrite(AIA, Max_speed2);
   analogWrite(AIB, 0);
   analogWrite(BIA, Max_speed1);
   analogWrite(BIB, 0);
-
 }
-
-void right() {
-  analogWrite(AIA, 0);
-  analogWrite(AIB, Max_speed2);
-  analogWrite(BIA, Max_speed2);
-  analogWrite(BIB, 0);
-  
-
-}
-
-void left(float t) {
-  analogWrite(AIA, Max_speed2);
-  analogWrite(AIB, 0);
-  analogWrite(BIA, 0);
-  analogWrite(BIB, Max_speed2);
-  delay(t);
-
-}
-
-void Brake(float t) {
-  analogWrite(AIA, 0);
-  analogWrite(AIB, 0);
-  analogWrite(BIA, 0);
-  analogWrite(BIB, 0);
-  delay(t);
-}
-void Right() {
-  analogWrite(AIA, 0);
-  analogWrite(AIB, 0);
-  analogWrite(BIA, Max_speed2);
-  analogWrite(BIB, 0);
-  
-
-}
-
 void left() {
-  analogWrite(AIA, Max_speed2-20);
+  analogWrite(AIA, 0);
   analogWrite(AIB, 0);
-  analogWrite(BIA, 0);
+  analogWrite(BIA, Max_speed1+20);
   analogWrite(BIB, 0);
   
 
 }
+void right()
+{
+  analogWrite(AIA, Max_speed1+20);
+  analogWrite(AIB, 0);
+  analogWrite(BIA, 0);
+  analogWrite(BIB, 0);
+}
 
-void brake() {
+void brake()
+{
   analogWrite(AIA, 0);
   analogWrite(AIB, 0);
   analogWrite(BIA, 0);
