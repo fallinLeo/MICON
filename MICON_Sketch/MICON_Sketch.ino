@@ -1,5 +1,8 @@
 #include <SoftwareSerial.h>
 #include "BlueTooth.cpp"
+#define sensor A0
+#define sensor1 A1
+#define sensor2 A2
 SoftwareSerial mySerial(2,3);//tx,rx
 
 const int AIA = 11;  //LEFT_ROLLER DIRECTION
@@ -17,13 +20,21 @@ void setup() {
   pinMode(AIB, OUTPUT);
   pinMode(BIA, OUTPUT);
   pinMode(BIB, OUTPUT);
-
+  pinMode(sensor,INPUT);
+  pinMode(sensor1, INPUT);
+  pinMode(sensor2, INPUT);
 }
+float distArray[20];
 
 void loop() {
   char st;
+  int adc=analogRead(sensor);
+  int adc1 = analogRead(sensor1);
+  int adc2 = analogRead(sensor2);
   bluetoothcheck(st);
-  
+  DetectedCheck(adc);
+  DetectedCheck(adc1);
+  DetectedCheck(adc2);
 }
 
 void bluetoothcheck(char st)
@@ -80,6 +91,46 @@ void bluetoothcheck(char st)
     }
   }
 }
+
+
+
+void DetectedCheck(float distance){  
+  int count = 0;
+  int arraySize = sizeof(distArray) / sizeof(distArray[0]) ;
+  for(int i = 0; i< arraySize; i++){
+    if(distArray[i] != 0) count++;
+    //Serial.print("distArray[i] : ");
+    //Serial.println(distArray[i]);
+  }
+   //Serial.print("count : ");
+  //Serial.println(count);
+  if(distance > 500) {
+    Serial.print("distance : ");
+    Serial.println(distance);
+    distArray[count] = distance;
+    Serial.print("distArray[count] : ");
+    Serial.println(distArray[count]);
+  }
+  if(count == 20) DetectedEvent();
+}
+void DetectedEvent(){
+  // distArray 배열 초기화
+  int arraySize = sizeof(distArray) / sizeof(distArray[0]) ;
+  for(int i = 0; i< arraySize; i++){
+    distArray[i] = 0;    
+  }
+  Serial.print("Dog Detect! ");
+}
+
+
+
+
+
+
+
+
+
+
 
 //=======motor run function start=====
 void forward() {
