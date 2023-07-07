@@ -1,0 +1,68 @@
+const int pA = 20; // phase-A of rotary encoder
+const int pB = 21; // phase-B of rotary encoder // phase-B of rotary encoder
+
+volatile signed long cnt = 0;
+volatile signed char dir = 1;
+
+//쩝
+unsigned long prev_time=0, current_time_fuck=0;
+
+unsigned long current_time=0, time_old=0;
+float delta_time=0, delta_pos=0, speed_encoder=0;
+volatile signed long old_enc=0, current_enc=0, delta_enc=0; 
+int j = 0;
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(pA, INPUT_PULLUP);
+  pinMode(pB, INPUT);
+  attachInterrupt(digitalPinToInterrupt(pA), encoderCount, FALLING);
+    // attachInterrupt(pZ, encoderReset, FALLING);
+}
+
+void loop() {
+  get_encoder_vel();
+  //Serial.print("pB pulse : ");
+  //Serial.println(digitalRead(pB));
+  delay(500);
+}
+
+void encoderCount()
+{
+  dir = (digitalRead(pB)==HIGH)? 1:-1; 
+  cnt += dir;
+}
+
+
+
+void get_encoder_vel() {
+  
+  current_time = micros();
+  delta_time = (current_time - time_old) / 1000000.0;
+  time_old = current_time;
+  
+
+  if (j == 0) {
+    old_enc = cnt;
+  } 
+  else {
+    current_enc = cnt;
+    Serial.print("current_enc : ");
+    Serial.println(current_enc);
+    delta_enc = current_enc - old_enc;
+    old_enc = current_enc;
+
+    delta_pos = delta_enc * 0.06283185307 * 0.265;
+    // tick2RAD        // wheel radius
+    // float delta_pos = delta_enc / 59.6;
+    speed_encoder =(delta_pos / delta_time);
+    // Serial.println(delta_pos);
+    // Serial.println("time one");
+    Serial.print("speed encoder : ");
+    Serial.print(speed_encoder*3.6);
+    Serial.println("km/h");
+  }
+  j = 1;
+  //cnt=0;
+}
+
